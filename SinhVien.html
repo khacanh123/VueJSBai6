@@ -1,148 +1,198 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
+
 <body>
-    <div id="app">
-      <h3>Quản lý sinh viên</h3>
+  <div id="app" class="container">
+    <h3 v-bind:style="{ textTransform: 'uppercase' }">{{Title}}</h3>
+    <div class="text-right" v-if="isShow">
       <button type="button" class="btn btn-primary" @click="add()" data-toggle="modal" data-target="#myModal">
-    Thêm mới
-  </button>
-    <table class="table table-striped">
-        <thead>
+        Thêm mới
+      </button>
+    </div>
+
+    <table class="table table-striped" v-if="isShow">
+      <thead>
         <tr>
-            <th>ID</th>
-            <th>Họ tên</th>
-            <th>Lớp </th>
-            <th>Địa chỉ</th>
-            <th>Action</th>
+          <th>ID</th>
+          <th>Họ và tên</th>
+          <th>Email </th>
+          <th>Số điện thoại</th>
+          <th>Giới tính</th>
+          <th>Hành động</th>
         </tr>
-        </thead>
-        <tbody>
+      </thead>
+      <tbody>
         <tr v-for="(item, key) in data">
-            <td>{{item.id}}</td>
-            <td>{{item.name}}</td>
-            <td>{{item.class}}</td>
-            <td>{{item.address}}</td>
-            <td>
-                <button @click="edit(key)" data-toggle="modal" data-target="#myModal">Sửa</button>
-                <button @click="deleteStudent(key)">Xóa</button>
-            </td>
+          <td>{{item.id}}</td>
+          <td>{{item.name}}</td>
+          <td>{{item.email}}</td>
+          <td>{{item.telephone}}</td>
+          <td>{{item.gioitinh}}</td>
+          <td>
+            <button @click="edit(key)">Sửa</button>|
+            <button @click="deleteStudent(key)">Xóa</button>
+          </td>
         </tr>
-       
-        </tbody>
+
+      </tbody>
     </table>
-  <!-- The Modal -->
-  <div class="modal fade" id="myModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-      
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">{{ Title }}</h4>
-          
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-        </div>
-        
-        <!-- Modal body -->
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="usr">Họ tên:</label>
-            <input type="text" class="form-control" v-model='name' id="usr">
-          </div>
-          <div class="form-group">
-            <label for="usr">Lớp:</label>
-            <input type="text" class="form-control" v-model='classStudent'>
-          </div>
-          <div class="form-group">
-            <label for="usr">Địa chỉ:</label>
-            <input type="text" class="form-control" v-model="address" id="usr">
-          </div>
-          
-        </div>
-        
-        <!-- Modal footer -->
-        <div class="modal-footer">
-          
-          <button type="button" class="btn btn-primary" @click="isEdit ? EditData(): AddData()" data-dismiss="modal">{{ isEdit ? 'Lưu lại' : 'Thêm mới' }}</button>
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-        </div>
-        
+
+    <div v-if="isForm">
+      <div class="form-group">
+        <label for="usr">Họ và tên:</label>
+        <input type="text" class="form-control" v-model='name' id="usr">
+        <span class="text-danger" v-bind:hidden="displayErrors.name">Vui lòng nhập tên</span>
       </div>
+
+      <div class="form-group">
+        <label for="usr">Email:</label>
+        <input type="email" class="form-control" v-model='email'>
+        <span class="text-danger" v-bind:hidden="displayErrors.email">Vui lòng nhập email</span>
+      </div>
+
+      <div class="form-group">
+        <label for="usr">Điện thoại:</label>
+        <input type="text" class="form-control" v-model="telephone" id="usr">
+        <span class="text-danger" v-bind:hidden="displayErrors.telephone">Vui lòng nhập điện thoại</span>
+      </div>
+
+      <div class="form-group">
+        <label for="">Giới tính</label>
+        <div class="form-check-inline">
+          <label class="form-check-label">
+            <input type="radio" class="form-check-input" value="Nam" v-model="gioitinh" name="optradio"> Nam
+          </label>
+        </div>
+        <div class="form-check-inline">
+          <label class="form-check-label">
+            <input type="radio" class="form-check-input" value="Nữ" v-model="gioitinh" name="optradio"> Nữ
+          </label>
+        </div>
+        <span class="text-danger" v-bind:hidden="displayErrors.gioitinh">Vui lòng chọn giới tính</span>
+      </div>
+<div class="text-center">
+      <button class="btn btn-primary" @click="isEdit ? EditData() : AddData() ">Lưu lại</button>
+      <button class="btn btn-danger" style="margin-left: 20px;">Hủy bỏ</button>
     </div>
-  </div>
+    </div>
     
-    </div>
-    <script src="https://unpkg.com/vue@next"></script>
-    <script>
-        Vue.createApp({
-    data(){
-      return {
-               Title: 'Thêm mới',
-               isEdit: false,
-               data:[
-                 
-               ],
-                name: '',
-               classStudent:'',
-               address:'',
-               idEdit: null
-             }
-     },
-     methods:{
-       add(){
-         this.isEdit = false;
-         this.name = '';
-         this.classStudent = '';
-         this.address = '';
-       },
-        edit(key){
-            this.Title='Sửa thông tin';
-            console.log(this.data[key]);
-            this.name = this.data[key].name;
-            this.classStudent = this.data[key].class;
-            this.address = this.data[key].address;
-            this.isEdit = true;
-            this.idEdit = key;
+
+
+  </div>
+  <script src="https://unpkg.com/vue@next"></script>
+  <script>
+    Vue.createApp({
+      data() {
+        return {
+          Title: 'Danh sách sinh viên',
+          isEdit: false,
+          data: [],
+          name: '',
+          email: '',
+          telephone: '',
+          gioitinh: '',
+          isShow: true,
+          isForm: false,
+          displayErrors:{
+            name: true,
+            telephone:true,
+            email: true,
+            gioitinh: true
+          }
+        }
+      },
+      methods: {
+        add() {
+          this.Title = 'Thêm mới sinh viên'
+          this.isEdit = false;
+          this.isForm = true;
+          this.isShow = false;
+          this.name = '';
+          this.email = '';
+          this.telephone = '';
+          this.gioitinh = ''
         },
-        deleteStudent(key){
-          if(confirm('Bạn có chắc chắn xóa không')){
+        edit(key) {
+          this.Title = 'Cập nhật thông tin sinh viên';
+          console.log(this.data[key]);
+          this.name = this.data[key].name;
+          this.email = this.data[key].email;
+          this.telephone = this.data[key].telephone;
+          this.gioitinh = this.data[key].gioitinh;
+          this.isEdit = true;
+          this.idEdit = key;
+          //close data table & show form edit
+          this.isShow = false;
+          this.isForm = true;
+        },
+        deleteStudent(key) {
+          if (confirm('Bạn có chắc chắn xóa không')) {
             this.data.splice(key, 1);
           }
         },
-        AddData(){
-          let id = null;
-          if(this.name === '' || this.classStudent === '' || this.address === ''){
-            alert('nhập đầy đủ thông tin');
+        ValidateData(){
+          if(this.name ==='' || this.email === ''||this.telephone === ''||this.gioitinh === '' ){
+            this.displayErrors.name =this.name ==='' ?  false: true ;
+            this.displayErrors.email = this.email === '' ? false: true;
+            this.displayErrors.telephone= this.telephone === '' ?  false: true;
+            this.displayErrors.gioitinh = this.gioitinh === '' ? false: true;
+            return false;
           }
+          // check field telephone
+          if(typeof(this.telephone) === "Number" || this.telephone.length !== 10 ){
+            this.displayErrors.telephone = false;
+            return false;
+          }else{
+            this.displayErrors.telephone = true;
+          }
+          return true;
+        },
+        AddData() {
+          let id = null;
+          if(this.ValidateData()){
           id = this.data.length + 1;
           this.data.push({
             id: id,
             name: this.name,
-            class: this.classStudent,
-            address: this.address,
+            email: this.email,
+            telephone: this.telephone,
+            gioitinh: this.gioitinh
           })
           // reset data
           this.name = '';
-          this.classStudent = '';
-          this.address = '';
-        },
-        EditData(){
-          this.data[this.idEdit].name = this.name;
-          this.data[this.idEdit].class = this.classStudent;
-          this.data[this.idEdit].address = this.address;
+          this.email = '';
+          this.telephone = '';
+          this.gioitinh = '';
+          // close form & show data table
+          this.isForm = false;
+          this.isShow = true;
         }
-     }
- }).mount('#app')
-    </script>
+        },
+        EditData() {
+          this.ValidateData();
+          this.data[this.idEdit].name = this.name;
+          this.data[this.idEdit].email = this.email;
+          this.data[this.idEdit].telephone = this.telephone;
+          this.data[this.idEdit].gioitinh = this.gioitinh;
+          // close form & show data table
+          this.isForm = false;
+          this.isShow = true;
+        }
+      }
+    }).mount('#app')
+  </script>
 </body>
+
 </html>
