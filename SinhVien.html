@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div id="app">
+      <h3>Quản lý sinh viên</h3>
+      <button type="button" class="btn btn-primary" @click="add()" data-toggle="modal" data-target="#myModal">
+    Thêm mới
+  </button>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Họ tên</th>
+            <th>Lớp </th>
+            <th>Địa chỉ</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="(item, key) in data">
+            <td>{{item.id}}</td>
+            <td>{{item.name}}</td>
+            <td>{{item.class}}</td>
+            <td>{{item.address}}</td>
+            <td>
+                <button @click="edit(key)" data-toggle="modal" data-target="#myModal">Sửa</button>
+                <button @click="deleteStudent(key)">Xóa</button>
+            </td>
+        </tr>
+       
+        </tbody>
+    </table>
+  <!-- The Modal -->
+  <div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">{{ Title }}</h4>
+          
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="usr">Họ tên:</label>
+            <input type="text" class="form-control" v-model='name' id="usr">
+          </div>
+          <div class="form-group">
+            <label for="usr">Lớp:</label>
+            <input type="text" class="form-control" v-model='classStudent'>
+          </div>
+          <div class="form-group">
+            <label for="usr">Địa chỉ:</label>
+            <input type="text" class="form-control" v-model="address" id="usr">
+          </div>
+          
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          
+          <button type="button" class="btn btn-primary" @click="isEdit ? EditData(): AddData()" data-dismiss="modal">{{ isEdit ? 'Lưu lại' : 'Thêm mới' }}</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+    
+    </div>
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+        Vue.createApp({
+    data(){
+      return {
+               Title: 'Thêm mới',
+               isEdit: false,
+               data:[
+                 
+               ],
+                name: '',
+               classStudent:'',
+               address:'',
+               idEdit: null
+             }
+     },
+     methods:{
+       add(){
+         this.isEdit = false;
+         this.name = '';
+         this.classStudent = '';
+         this.address = '';
+       },
+        edit(key){
+            this.Title='Sửa thông tin';
+            console.log(this.data[key]);
+            this.name = this.data[key].name;
+            this.classStudent = this.data[key].class;
+            this.address = this.data[key].address;
+            this.isEdit = true;
+            this.idEdit = key;
+        },
+        deleteStudent(key){
+          if(confirm('Bạn có chắc chắn xóa không')){
+            this.data.splice(key, 1);
+          }
+        },
+        AddData(){
+          let id = null;
+          if(this.name === '' || this.classStudent === '' || this.address === ''){
+            alert('nhập đầy đủ thông tin');
+          }
+          id = this.data.length + 1;
+          this.data.push({
+            id: id,
+            name: this.name,
+            class: this.classStudent,
+            address: this.address,
+          })
+          // reset data
+          this.name = '';
+          this.classStudent = '';
+          this.address = '';
+        },
+        EditData(){
+          this.data[this.idEdit].name = this.name;
+          this.data[this.idEdit].class = this.classStudent;
+          this.data[this.idEdit].address = this.address;
+        }
+     }
+ }).mount('#app')
+    </script>
+</body>
+</html>
